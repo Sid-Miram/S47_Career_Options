@@ -1,0 +1,12 @@
+{
+  "name": "careeroptions",
+  "version": "1.0.0",
+  "description": "This project name is \"Mastering the Art of Becoming a Beggar: A 7-Day Guide to Loose Everything\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Sid",
+  "license": "ISC"
+}
