@@ -24,6 +24,7 @@ app.use((error, req, res, next) => {
 if (require.main === module) {
   app.listen(port, () => {
     console.log(`🚀 server running on PORT: ${port}`);
+    console.log(`Click on this link to visit page(Ctrl+Click): http://localhost:${port}/ping`)
   });
 }
 
