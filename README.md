@@ -1,6 +1,6 @@
-This project name is "Mastering the Art of Becoming a Beggar: A 7-Day Guide to Loose Everything"
+This project name is "Mastering the Art of Becoming a Beggar: A 15-Day Guide to Loose Everything"
 
-I would be providing a guide to lose everything in 7 days!!
+I would be providing a guide to lose everything in 15 days!!
 
 Amazing ain't it?
 
@@ -10,3 +10,5 @@ Credits:
 
 Happy Slothing :)
 
+
+Deployed Site - https://s47careeroptions.pages.dev/
