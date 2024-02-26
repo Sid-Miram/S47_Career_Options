@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+.entity-container {
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.747);
+  border-radius: 5px 3px;
+  margin: 50px;
+}

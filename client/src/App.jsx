@@ -1,7 +1,12 @@
 import React from 'react';
 import './App.css';
+import data from '../../Data.json';
 
 function App() {
+  const entity = data['id_1'];
+  const { id, ...rest } = entity;
+  const dayEntity = { day: id, ...rest };
+
   return (
     <div className="App">
       <header className="header">
@@ -15,6 +20,18 @@ function App() {
         <p>Our haunted halls whisper tales of sorrow and despair, inviting you to wander aimlessly through the corridors of melancholy.</p>
       </section>
 
+
+      <div className="entity-container">
+        <div className="entity">
+          <h2>Day {dayEntity.day}: {dayEntity.title}</h2>
+          <ul>
+            {dayEntity.actions.map((action, index) => (
+              <li key={index}>{action}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
       <footer className="footer">
         <p>&copy; 2024 The Descent. All rights forfeited.</p>
       </footer>
@@ -23,4 +40,3 @@ function App() {
 }
 
 export default App;
-
