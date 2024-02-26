@@ -1,10 +1,23 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
+const mongoose = require('mongoose')
+
+const data = "mongodb+srv://Sid:Hello@cluster0.vxyjgk1.mongodb.net/?retryWrites=true&w=majority"
 
 // define the ping route
 app.get("/ping",(req,res)=>{
     res.send("pong")
+})
+
+app.get("/", (req, res)=> {
+  mongoose.connect(data)
+  .then(()=>{
+      res.json({"Connection_Status" : "Connected"})
+  .catch((err)=>{
+          res.json({"Connection_Status" : "Not Connnected"})
+        })
+    })
 })
 
 app.all("*", (req,res,next) => {
