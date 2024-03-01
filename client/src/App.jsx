@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
@@ -7,7 +6,7 @@ function App() {
 
   // Fetch data from the server when the component mounts
   useEffect(() => {
-    fetch('http://localhost:3000/getting')
+    fetch('http://localhost:3000/entities')
       .then(response => response.json())
       .then(data => setData(data))
       .catch(error => console.error('Error fetching data:', error));
@@ -34,9 +33,7 @@ function App() {
           <div className="entity" key={index}>
             <h2>Day {entity.id}: {entity.title}</h2>
             <ul>
-              {entity.actions.map((action, index) => (
-                <li key={index}>{action}</li>
-              ))}
+              {entity.actions}
             </ul>
           </div>
         ))}
