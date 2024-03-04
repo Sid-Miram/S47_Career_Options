@@ -1,19 +1,24 @@
-
 const express = require('express');
-const router = express.Router(); // Create a router instance
-const data = require('./Data.json');
-
+const router = express.Router(); 
+const DayModel = require('./Usermodel.js'); 
 // GET route to fetch data
 router.get('/getting', (req, res) => {
     res.json(data);
 });
 
 // POST route to add data
-router.post('/', (req, res) => {
-    const newDay = req.body;
-    const id = `id_${Object.keys(data).length + 1}`;
-    data[id] = newDay;
-    res.json({ id: id, message: "New day added successfully", data: newDay });
+router.post('/', async (req, res) => {
+    try {
+        const newDay = req.body;
+        const totalCount = await DayModel.countDocuments({});
+        newDay.day = totalCount + 1; 
+        const day = new DayModel(newDay);
+        await day.save();
+        res.json({ message: "New day added successfully", data: day });
+    } catch (err) {
+        console.error("Error adding new day:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 // PUT route to update data
