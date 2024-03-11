@@ -11,7 +11,8 @@ router.post('/', async (req, res) => {
     try {
         const newDay = req.body;
         const totalCount = await DayModel.countDocuments({});
-        newDay.day = totalCount + 1; 
+        newDay.day = totalCount + 1;
+        newDay.id = totalCount + 1;
         const day = new DayModel(newDay);
         await day.save();
         res.json({ message: "New day added successfully", data: day });
