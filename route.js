@@ -11,7 +11,8 @@ router.post('/', async (req, res) => {
     try {
         const newDay = req.body;
         const totalCount = await DayModel.countDocuments({});
-        newDay.day = totalCount + 1; 
+        newDay.day = totalCount + 1;
+        newDay.id = totalCount + 1;
         const day = new DayModel(newDay);
         await day.save();
         res.json({ message: "New day added successfully", data: day });
@@ -22,27 +23,28 @@ router.post('/', async (req, res) => {
 });
 
 // PUT route to update data
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
     const id = req.params.id;
     const update = req.body;
-    if (data[id]) {
-        data[id] = update;
-        res.json({ message: `Day with id ${id} updated successfully`, data: data[id] });
-    } else {
-        res.status(404).json({ error: `Day with id ${id} not found` });
+    try {
+        const updatedDay = await DayModel.findByIdAndUpdate(id, update, { new: true });
+        if (updatedDay) {
+            res.json({ message: `Day with id ${id} updated successfully`, data: updatedDay });
+        } else {
+            res.status(404).json({ error: `Day with id ${id} not found` });
+        }
+    } catch (err) {
+        console.error("Error updating day:", err);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
-
 // DELETE route to delete data
-router.delete('/:id', (req, res) => {
-    const id = req.params.id;
-    if (data[id]) {
-        delete data[id];
-        res.json({ message: `Day with id ${id} deleted successfully` });
-    } else {
-        res.status(404).json({ error: `Day with id ${id} not found` });
-    }
-});
+router.delete('/Delete-Entities/:id',(req,res)=>{
+    const {id} = req.params
+    DayModel.findByIdAndDelete({_id:id})
+    .then(data=>res.json(data))
+    .catch((err)=>res.json(err))
+})
 
 module.exports = router; // Export the router instance
 
