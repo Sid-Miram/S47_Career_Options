@@ -1,40 +1,28 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function AddForm() {
-    const [day, setDay] = useState('');
-    const [title, setTitle] = useState('');
-    const [actions, setActions] = useState('');
+function AddForm({ onSubmit, initialFormData }) {
+    const [day, setDay] = useState(initialFormData ? initialFormData.day : '');
+    const [title, setTitle] = useState(initialFormData ? initialFormData.title : '');
+    const [actions, setActions] = useState(initialFormData ? initialFormData.actions : '');
+
+    useEffect(() => {
+        if (initialFormData) {
+            setDay(initialFormData.day);
+            setTitle(initialFormData.title);
+            setActions(initialFormData.actions);
+        }
+    }, [initialFormData]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newDay = { day, title, actions };
-
-        try {
-            const response = await fetch('http://localhost:3000/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newDay),
-            });
-
-            if (response.ok) {
-                console.log('New day added successfully');
-                // Optionally, you can handle success, such as showing a success message or redirecting
-            } else {
-                console.error('Failed to add new day');
-                // Optionally, you can handle errors, such as showing an error message
-            }
-        } catch (error) {
-            console.error('Error adding new day:', error);
-            // Optionally, you can handle errors, such as showing an error message
-        }
+        const formData = { day, title, actions };
+        onSubmit(formData);
     };
 
     return (
         <div className="add-form">
-            <h2>Add New Day</h2>
+            <h2>{initialFormData ? 'Update Day' : 'Add New Day'}</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label htmlFor="title">Title:</label>
@@ -55,10 +43,11 @@ function AddForm() {
                         required
                     />
                 </div>
-                <button type="submit">Add Day</button>
+                <button type="submit">{initialFormData ? 'Update Day' : 'Add Day'}</button>
             </form>
         </div>
     );
 }
 
 export default AddForm;
+

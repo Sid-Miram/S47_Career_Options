@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const Day = new mongoose.Schema({
     id: {
         type: Number,
-        required: true,
-        unique: true,
+      //  required: true,
+      //  unique: true,
     },
     day: {
         type: String,
