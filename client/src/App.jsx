@@ -1,4 +1,6 @@
 
+// App.jsx
+
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import AddForm from './AddForm'; // Import the AddForm component
@@ -7,7 +9,7 @@ import axios from "axios";
 function App() {
   const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [updateFormData, setUpdateFormData] = useState({});
+  const [updateFormData, setUpdateFormData] = useState(null); // Change to null for initial state
 
   // Fetch data from the server when the component mounts
   useEffect(() => {
@@ -22,6 +24,7 @@ function App() {
 
   const handleAddButtonClick = () => {
     setShowForm(true);
+    setUpdateFormData(null); // Set updateFormData to null when adding a new day
   };
 
   const handleFormSubmit = (formData) => {
