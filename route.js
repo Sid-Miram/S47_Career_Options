@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router(); 
 const DayModel = require('./Usermodel.js'); 
+
 const jwt = require('jsonwebtoken')
 
 
@@ -15,8 +16,6 @@ router.post('/login',(req,res)=>{
 router.get('/getting', (req, res) => {
     res.json(data);
 });
-
-
 
 router.post('/', async (req, res) => {
     try {
