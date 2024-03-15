@@ -1,5 +1,3 @@
-// App.jsx
-
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import AddForm from './AddForm'; // Assuming this is a form component you've created
@@ -32,6 +30,7 @@ function App() {
   const [showForm, setShowForm] = useState(false);
   const [updateFormData, setUpdateFormData] = useState(null);
   const [user, setUser] = useState(null);
+  const [sortCriteria, setSortCriteria] = useState('day'); // State for sorting criteria
 
   // Fetch data from the server and load user from cookie on component mount
   useEffect(() => {
@@ -40,12 +39,18 @@ function App() {
       setUser(JSON.parse(userData));
     }
     fetchData();
-  }, []); // Fetch data only once on component mount
+  }, [sortCriteria]); // Re-fetch data when sort criteria changes
 
   const fetchData = () => {
     axios.get('http://localhost:3000/entities')
       .then(response => {
-        setData(response.data);
+        const sortedData = response.data.sort((a, b) => {
+          if (typeof a[sortCriteria] === "number") {
+            return a[sortCriteria] - b[sortCriteria];
+          }
+          return a[sortCriteria].localeCompare(b[sortCriteria], 'en', {numeric: true});
+        });
+        setData(sortedData);
       })
       .catch(error => console.error('Error fetching data:', error));
   };
@@ -77,6 +82,9 @@ function App() {
     return <LoginForm onLogin={handleLogin} />;
   }
 
+  const handleSortCriteriaChange = (e) => {
+    setSortCriteria(e.target.value);
+  };
   return (
     <div className="App">
       <div className="logout-container">
@@ -87,6 +95,14 @@ function App() {
           <h1>The Descent</h1>
           <p>How to Lose Everything in 15 Days</p>
         </header>
+        <div className="sort-container">
+        <label htmlFor="sortCriteria">Sort by:</label>
+        <select id="sortCriteria" value={sortCriteria} onChange={handleSortCriteriaChange}>
+          <option value="day">Day</option>
+          <option value="title">Title</option>
+          {/* Add other sorting options as needed */}
+        </select>
+      </div>
       </div>
       <div className="entity-container">
         {data.map((entity, index) => (
