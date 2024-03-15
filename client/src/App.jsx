@@ -87,12 +87,6 @@ function App() {
           <h1>The Descent</h1>
           <p>How to Lose Everything in 15 Days</p>
         </header>
-        <section className="main-content">
-          <p>Embark on a journey to lose it all...</p>
-          <p>Step into the darkness and embrace the solitude of our haunted manor. Here, amidst the shadows and echoes of the past, you'll find solace in your loneliness.</p>
-          <p>Our haunted halls whisper tales of sorrow and despair, inviting you to wander aimlessly through the corridors of melancholy.</p>
-          <p>Now it's on to you, what to do on your last day of happiness, that is <span>16th</span> Day.</p>
-        </section>
       </div>
       <div className="entity-container">
         {data.map((entity, index) => (
