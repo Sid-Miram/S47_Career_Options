@@ -1,77 +1,108 @@
-
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import AddForm from './AddForm'; // Import the AddForm component
+import AddForm from './AddForm'; // Assuming this is a form component you've created
+import LoginForm from './Login'; // Assuming this is a login form component you've created
 import axios from "axios";
+
+// Utility functions for cookie management
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function setCookie(name, value, days) {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function deleteCookie(name) {
+  document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
 
 function App() {
   const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [updateFormData, setUpdateFormData] = useState({});
+  const [updateFormData, setUpdateFormData] = useState(null);
+  const [user, setUser] = useState(null);
+  const [sortCriteria, setSortCriteria] = useState('day'); // State for sorting criteria
 
-  // Fetch data from the server when the component mounts
+  // Fetch data from the server and load user from cookie on component mount
   useEffect(() => {
+    const userData = getCookie('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
     fetchData();
-  }, []);
+  }, [sortCriteria]); // Re-fetch data when sort criteria changes
 
   const fetchData = () => {
     axios.get('http://localhost:3000/entities')
-      .then(response => setData(response.data))
+      .then(response => {
+        const sortedData = response.data.sort((a, b) => {
+          if (typeof a[sortCriteria] === "number") {
+            return a[sortCriteria] - b[sortCriteria];
+          }
+          return a[sortCriteria].localeCompare(b[sortCriteria], 'en', {numeric: true});
+        });
+        setData(sortedData);
+      })
       .catch(error => console.error('Error fetching data:', error));
+  };
+
+  const handleLogin = (loginCredentials) => {
+    axios.post('http://localhost:3000/login', loginCredentials)
+        .then(response => {
+            const token = response.data; 
+            console.log("JWT Token:", token); // Logging the token
+            setCookie('jwt_token', token, 7); // Save JWT token in cookie
+            setCookie('user', JSON.stringify({ username: loginCredentials.username }), 7);
+            setUser({ username: loginCredentials.username });
+        })
+        .catch(error => console.error('Error during login:', error));
+  };
+
+  const handleLogout = () => {
+    deleteCookie('jwt_token');
+    deleteCookie('user');
+    setUser(null);
   };
 
   const handleAddButtonClick = () => {
     setShowForm(true);
+    setUpdateFormData(null);
   };
 
-  const handleFormSubmit = (formData) => {
-    // Send the form data to the server
-    // Here you can make a POST request to your API endpoint to add the new data
-    console.log(formData);
-    axios.post('http://localhost:3000/', formData)
-      .then(() => {
-        setShowForm(false); // Hide the form after successful submission
-        fetchData(); // Fetch updated data
-      })
-      .catch(error => console.error('Error adding new day:', error));
-  };
+  if (!user) {
+    return <LoginForm onLogin={handleLogin} />;
+  }
 
-  const handleUpdateButtonClick = (entity) => {
-    setUpdateFormData(entity);
-    setShowForm(true);
+  const handleSortCriteriaChange = (e) => {
+    setSortCriteria(e.target.value);
   };
-
-  const handleUpdateFormSubmit = (formData) => {
-    // Send the updated form data to the server
-    // Here you can make a PUT request to your API endpoint to update the data
-    console.log(formData);
-    axios.put(`http://localhost:3000/${updateFormData._id}`, formData)
-      .then(() => {
-        setShowForm(false); // Hide the form after successful submission
-        fetchData(); // Fetch updated data
-      })
-      .catch(error => console.error('Error updating day:', error));
-  };
-
-  const handleDelete = (id) => {
-    axios.delete(`http://localhost:3000/Delete-Entities/${id}`)
-      .then(() => fetchData()) // Fetch updated data after deletion
-      .catch(err => console.error('Error deleting day:', err));
-  };
-
   return (
     <div className="App">
+      <div className="logout-container">
+        <button onClick={handleLogout}>Logout</button>
+      </div>
       <div className="Landing">
         <header className="header">
           <h1>The Descent</h1>
           <p>How to Lose Everything in 15 Days</p>
         </header>
-        <section className="main-content">
-          <p>Embark on a journey to lose it all...</p>
-          <p>Step into the darkness and embrace the solitude of our haunted manor. Here, amidst the shadows and echoes of the past, you'll find solace in your loneliness.</p>
-          <p>Our haunted halls whisper tales of sorrow and despair, inviting you to wander aimlessly through the corridors of melancholy.</p>
-          <p>Now it's on to you, what to do on your last day of happiness, that is <span>16th</span> Day.</p>
-        </section>
+        <div className="sort-container">
+        <label htmlFor="sortCriteria">Sort by:</label>
+        <select id="sortCriteria" value={sortCriteria} onChange={handleSortCriteriaChange}>
+          <option value="day">Day</option>
+          <option value="title">Title</option>
+          {/* Add other sorting options as needed */}
+        </select>
+      </div>
       </div>
       <div className="entity-container">
         {data.map((entity, index) => (
@@ -88,14 +119,12 @@ function App() {
       <footer className="footer">
         <p>&copy; 2024 The Descent. All rights forfeited.</p>
       </footer>
-      {/* Form */}
       <div className="form-container">
         {showForm && <AddForm onSubmit={updateFormData ? handleUpdateFormSubmit : handleFormSubmit} initialFormData={updateFormData} />}
-        {!showForm && <button onClick={handleAddButtonClick}>Add</button>}
+        {!showForm && <button onClick={handleAddButtonClick}>Add New Entity</button>}
       </div>
     </div>
   );
 }
 
 export default App;
-
