@@ -55,7 +55,8 @@ function App() {
       .catch(error => console.error('Error fetching data:', error));
   };
 
-  const handleLogin = (loginCredentials) => {
+   const handleLogin = (loginCredentials) => {
+
     axios.post('http://localhost:3000/login', loginCredentials)
         .then(response => {
             const token = response.data; 
@@ -68,7 +69,8 @@ function App() {
   };
 
   const handleLogout = () => {
-    deleteCookie('jwt_token');
+
+    deleteCookie('jwt_token')
     deleteCookie('user');
     setUser(null);
   };
@@ -86,10 +88,12 @@ function App() {
       })
       .catch(error => console.error('Error adding new entity:', error));
   };
+
   const handleUpdateButtonClick = (entity) => {
     setUpdateFormData(entity); // Set the entity to be updated
     setShowForm(true); // Show the form for updating
   };
+
   const handleUpdateFormSubmit = (formData) => {
     console.log(formData); // For demonstration; replace with API call logic
     axios.put(`http://localhost:3000/${updateFormData._id}`, formData)
@@ -99,11 +103,13 @@ function App() {
       })
       .catch(error => console.error('Error updating entity:', error));
   };
+
   const handleDelete = (id) => {
     axios.delete(`http://localhost:3000/Delete-Entities/${id}`)
       .then(() => fetchData()) // Fetch updated data after deletion
       .catch(error => console.error('Error deleting entity:', error));
   };
+
 
   if (!user) {
     return <LoginForm onLogin={handleLogin} />;

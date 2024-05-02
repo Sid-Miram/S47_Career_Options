@@ -12,6 +12,9 @@ router.post('/login',(req,res)=>{
     res.send(token)
 })
 
+
+// GET route to fetch data
+
 router.get('/getting', (req, res) => {
     res.json(data);
 });
