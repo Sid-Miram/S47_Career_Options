@@ -46,12 +46,20 @@ function App() {
       .catch(error => console.error('Error fetching data:', error));
   };
 
-  const handleLogin = (userInfo) => {
-    setUser(userInfo);
-    setCookie('user', JSON.stringify(userInfo), 7); // Expires in 7 days
+   const handleLogin = (loginCredentials) => {
+    axios.post('http://localhost:3000/login', loginCredentials)
+        .then(response => {
+            const token = response.data; 
+            console.log("JWT Token:", token); // Logging the token
+            setCookie('jwt_token', token, 7); // Save JWT token in cookie
+            setCookie('user', JSON.stringify({ username: loginCredentials.username }), 7);
+            setUser({ username: loginCredentials.username });
+        })
+        .catch(error => console.error('Error during login:', error));
   };
 
   const handleLogout = () => {
+    deleteCookie('jwt_token')
     deleteCookie('user');
     setUser(null);
   };

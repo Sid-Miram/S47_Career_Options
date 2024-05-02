@@ -1,6 +1,18 @@
 const express = require('express');
 const router = express.Router(); 
 const DayModel = require('./Usermodel.js'); 
+
+const jwt = require('jsonwebtoken')
+
+
+
+router.post('/login',(req,res)=>{
+    const secret = "siddhart"
+    const token = jwt.sign({data:req.body},secret)
+    console.log(token)
+    res.send(token)
+})
+
 // GET route to fetch data
 router.get('/getting', (req, res) => {
     res.json(data);
