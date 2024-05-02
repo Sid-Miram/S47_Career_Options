@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import AddForm from './AddForm'; // Import the AddForm component for adding new entities
-import LoginForm from './Login'; // Import the LoginForm component for user authentication
+import AddForm from './AddForm'; // Assuming this is a form component you've created
+import LoginForm from './Login'; // Assuming this is a login form component you've created
 import axios from "axios";
 
 // Utility functions for cookie management
@@ -29,7 +29,8 @@ function App() {
   const [data, setData] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [updateFormData, setUpdateFormData] = useState(null);
-  const [user, setUser] = useState(null); // State to manage the logged-in user
+  const [user, setUser] = useState(null);
+  const [sortCriteria, setSortCriteria] = useState('day'); // State for sorting criteria
 
   // Fetch data from the server and load user from cookie on component mount
   useEffect(() => {
@@ -38,15 +39,24 @@ function App() {
       setUser(JSON.parse(userData));
     }
     fetchData();
-  }, []);
+  }, [sortCriteria]); // Re-fetch data when sort criteria changes
 
   const fetchData = () => {
     axios.get('http://localhost:3000/entities')
-      .then(response => setData(response.data))
+      .then(response => {
+        const sortedData = response.data.sort((a, b) => {
+          if (typeof a[sortCriteria] === "number") {
+            return a[sortCriteria] - b[sortCriteria];
+          }
+          return a[sortCriteria].localeCompare(b[sortCriteria], 'en', {numeric: true});
+        });
+        setData(sortedData);
+      })
       .catch(error => console.error('Error fetching data:', error));
   };
 
    const handleLogin = (loginCredentials) => {
+
     axios.post('http://localhost:3000/login', loginCredentials)
         .then(response => {
             const token = response.data; 
@@ -59,6 +69,7 @@ function App() {
   };
 
   const handleLogout = () => {
+
     deleteCookie('jwt_token')
     deleteCookie('user');
     setUser(null);
@@ -66,46 +77,16 @@ function App() {
 
   const handleAddButtonClick = () => {
     setShowForm(true);
-    setUpdateFormData(null); // Reset updateFormData when adding a new entity
+    setUpdateFormData(null);
   };
 
-  const handleFormSubmit = (formData) => {
-    console.log(formData); // For demonstration; replace with API call logic
-    axios.post('http://localhost:3000/', formData)
-      .then(() => {
-        setShowForm(false); // Hide the form after submission
-        fetchData(); // Fetch updated data
-      })
-      .catch(error => console.error('Error adding new entity:', error));
-  };
-
-  const handleUpdateButtonClick = (entity) => {
-    setUpdateFormData(entity); // Set the entity to be updated
-    setShowForm(true); // Show the form for updating
-  };
-
-  const handleUpdateFormSubmit = (formData) => {
-    console.log(formData); // For demonstration; replace with API call logic
-    axios.put(`http://localhost:3000/${updateFormData._id}`, formData)
-      .then(() => {
-        setShowForm(false); // Hide the form after submission
-        fetchData(); // Fetch updated data
-      })
-      .catch(error => console.error('Error updating entity:', error));
-  };
-
-  const handleDelete = (id) => {
-    axios.delete(`http://localhost:3000/Delete-Entities/${id}`)
-      .then(() => fetchData()) // Fetch updated data after deletion
-      .catch(error => console.error('Error deleting entity:', error));
-  };
-
-  // Display login form if user is not authenticated
   if (!user) {
     return <LoginForm onLogin={handleLogin} />;
   }
 
-  // Main application UI
+  const handleSortCriteriaChange = (e) => {
+    setSortCriteria(e.target.value);
+  };
   return (
     <div className="App">
       <div className="logout-container">
@@ -116,12 +97,14 @@ function App() {
           <h1>The Descent</h1>
           <p>How to Lose Everything in 15 Days</p>
         </header>
-        <section className="main-content">
-          <p>Embark on a journey to lose it all...</p>
-          <p>Step into the darkness and embrace the solitude of our haunted manor. Here, amidst the shadows and echoes of the past, you'll find solace in your loneliness.</p>
-          <p>Our haunted halls whisper tales of sorrow and despair, inviting you to wander aimlessly through the corridors of melancholy.</p>
-          <p>Now it's on to you, what to do on your last day of happiness, that is <span>16th</span> Day.</p>
-        </section>
+        <div className="sort-container">
+        <label htmlFor="sortCriteria">Sort by:</label>
+        <select id="sortCriteria" value={sortCriteria} onChange={handleSortCriteriaChange}>
+          <option value="day">Day</option>
+          <option value="title">Title</option>
+          {/* Add other sorting options as needed */}
+        </select>
+      </div>
       </div>
       <div className="entity-container">
         {data.map((entity, index) => (

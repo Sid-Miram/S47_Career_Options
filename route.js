@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router(); 
 const DayModel = require('./Usermodel.js'); 
-
 const jwt = require('jsonwebtoken')
 
 
@@ -13,12 +12,15 @@ router.post('/login',(req,res)=>{
     res.send(token)
 })
 
+
 // GET route to fetch data
+
 router.get('/getting', (req, res) => {
     res.json(data);
 });
 
-// POST route to add data
+
+
 router.post('/', async (req, res) => {
     try {
         const newDay = req.body;
@@ -34,7 +36,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT route to update data
+
 router.put('/:id', async (req, res) => {
     const id = req.params.id;
     const update = req.body;
@@ -50,7 +52,7 @@ router.put('/:id', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// DELETE route to delete data
+
 router.delete('/Delete-Entities/:id',(req,res)=>{
     const {id} = req.params
     DayModel.findByIdAndDelete({_id:id})
@@ -58,5 +60,4 @@ router.delete('/Delete-Entities/:id',(req,res)=>{
     .catch((err)=>res.json(err))
 })
 
-module.exports = router; // Export the router instance
-
+module.exports = router; 
