@@ -110,7 +110,6 @@ function App() {
       .catch(error => console.error('Error deleting entity:', error));
   };
 
-  https://github.com/kalviumcommunity/S47_Career_Options/pull/17/files
 
   if (!user) {
     return <LoginForm onLogin={handleLogin} />;
