@@ -79,6 +79,38 @@ function App() {
     setShowForm(true);
     setUpdateFormData(null);
   };
+  const handleFormSubmit = (formData) => {
+    console.log(formData); // For demonstration; replace with API call logic
+    axios.post('http://localhost:3000/', formData)
+      .then(() => {
+        setShowForm(false); // Hide the form after submission
+        fetchData(); // Fetch updated data
+      })
+      .catch(error => console.error('Error adding new entity:', error));
+  };
+
+  const handleUpdateButtonClick = (entity) => {
+    setUpdateFormData(entity); // Set the entity to be updated
+    setShowForm(true); // Show the form for updating
+  };
+
+  const handleUpdateFormSubmit = (formData) => {
+    console.log(formData); // For demonstration; replace with API call logic
+    axios.put(`http://localhost:3000/${updateFormData._id}`, formData)
+      .then(() => {
+        setShowForm(false); // Hide the form after submission
+        fetchData(); // Fetch updated data
+      })
+      .catch(error => console.error('Error updating entity:', error));
+  };
+
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:3000/Delete-Entities/${id}`)
+      .then(() => fetchData()) // Fetch updated data after deletion
+      .catch(error => console.error('Error deleting entity:', error));
+  };
+
+  https://github.com/kalviumcommunity/S47_Career_Options/pull/17/files
 
   if (!user) {
     return <LoginForm onLogin={handleLogin} />;
