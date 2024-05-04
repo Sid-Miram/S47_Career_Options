@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Joi from 'joi';
 
@@ -5,6 +6,7 @@ function AddForm({ onSubmit, initialFormData }) {
     const [day, setDay] = useState(initialFormData ? initialFormData.day : '');
     const [title, setTitle] = useState(initialFormData ? initialFormData.title : '');
     const [actions, setActions] = useState(initialFormData ? initialFormData.actions : '');
+    const [createdBy, setCreatedBy] = useState(initialFormData ? initialFormData.createdBy : ''); // State for createdBy
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
@@ -12,16 +14,18 @@ function AddForm({ onSubmit, initialFormData }) {
             setDay(initialFormData.day);
             setTitle(initialFormData.title);
             setActions(initialFormData.actions);
+            setCreatedBy(initialFormData.createdBy); // Set createdBy if initialFormData exists
         }
     }, [initialFormData]);
 
     const schema = Joi.object({
         title: Joi.string().min(4).required().label('Title'),
         actions: Joi.string().required().label('Actions'),
+        createdBy: Joi.string().required().label('Created By'), // Adding createdBy to the schema
     });
 
     const validate = () => {
-        const result = schema.validate({ title, actions }, { abortEarly: false, allowUnknown: true });
+        const result = schema.validate({ title, actions, createdBy }, { abortEarly: false, allowUnknown: true });
         if (!result.error) return null;
 
         const newErrors = {};
@@ -39,7 +43,7 @@ function AddForm({ onSubmit, initialFormData }) {
             return;
         }
 
-        const formData = { day, title, actions };
+        const formData = { day, title, actions, createdBy }; // Include createdBy in formData
         onSubmit(formData);
     };
 
@@ -68,6 +72,18 @@ function AddForm({ onSubmit, initialFormData }) {
                     />
                     {errors.actions && <p className="error">{errors.actions}</p>}
                 </div>
+                <div className="form-group">
+                    <label htmlFor="createdBy">Created By:</label>
+                    <input
+                        type="text"
+                        id="createdBy"
+                        value={createdBy}
+                        onChange={(e) => setCreatedBy(e.target.value)} // Update createdBy state
+                        required
+                    />
+                    {errors.createdBy && <p className="error">{errors.createdBy}</p>}
+                </div>
+
                 <button type="submit">{initialFormData ? 'Update Day' : 'Add Day'}</button>
             </form>
         </div>
